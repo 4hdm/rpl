@@ -1,6 +1,5 @@
-# ahdam ashari/202412039
-# muhammad aditya januar/202412049
-
+# Ahdam Ashari / 202412039
+# Muhammad Aditya Januar / 202412049
 # 🕒 Presensi Karyawan — Turn Around SBU JPP PKT
 
 ## 📘 Deskripsi Proyek
@@ -57,7 +56,7 @@ Menggunakan *GitHub* sebagai repository version control.
 | hotfix/* | Perbaikan cepat bug |
 
 ### 🔹 Alur Workflow
-```bash
+bash
 # Clone repo
 git clone https://github.com/<user>/presensi-jpp-pkt.git
 
@@ -74,4 +73,78 @@ git merge feature/add-export-csv
 
 # Setelah uji, merge ke main
 git checkout main
-git merge development
+git merge development
+
+## 🪲 Bug Ditemukan dan Solusi Perbaikan
+
+Selama pengembangan proyek **Presensi Karyawan — Turn Around SBU JPP PKT**, ditemukan beberapa bug dan potensi error logika pada kode JavaScript utama (`index.html`). Berikut hasil audit dan perbaikannya:
+
+---
+
+### ⿡ Bug: Nilai `datetime-local` tidak valid (detik disertakan)
+**Kode Asli:**
+js
+function nowLocalInputValue() {
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return ${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())};
+}
+### solusi
+function nowLocalInputValue() {
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  return ${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())};
+}
+
+### Bug tombol
+document.querySelectorAll('input[name="inMode"]').forEach(el => {
+  el.addEventListener('change', () => {
+    checkInTime.disabled = (el.value === 'auto');
+  });
+});
+document.querySelectorAll('input[name="outMode"]').forEach(el => {
+  el.addEventListener('change', () => {
+    checkOutTime.disabled = (el.value === 'auto');
+  });
+});
+
+
+### solusi
+if (mode === 'manual' && !checkInTime.value) {
+  return alert('Waktu manual harus diisi sebelum menyimpan!');
+}
+
+
+### Bug tombol hapus semua
+btnClear.addEventListener('click', () => {
+  if (!confirm('Hapus semua data presensi?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderTable(); // ← tambahan agar tabel ikut disegarkan
+});
+
+
+### solusi
+company.addEventListener('change', () => {
+  if (company.value === 'lainnya') {
+    companyOtherWrap.style.display = 'block';
+  } else {
+    companyOtherWrap.style.display = 'none';
+    companyOther.value = ''; // reset nilai jika bukan 'lainnya'
+  }
+});
+
+
+### solusi bug duplikasi data
+const isDuplicate = data.some(r => r.nik === id && r.type === rec.type && r.waktu === rec.waktu);
+if (isDuplicate) return alert('Data duplikat: entri ini sudah tersimpan.');
+
+
+### Bug tampilan warna
+label { color: #e9edf4; }
+
+### Bug localstorage penuh
+try {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+} catch(e) {
+  alert('Gagal menyimpan data: kapasitas penyimpanan browser penuh.');
+}
