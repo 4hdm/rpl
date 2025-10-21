@@ -1,28 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Presensi Karyawan — Turn arround SBU JPP PKT</title>
+    <title>Presensi Karyawan — Turn arround SBU JPP PKT (Face ID + Jabatan)</title>
     <meta name="description" content="Presensi Turn arround SBU JPP PKT — check-in & check-out karyawan" />
     <style>
-        /* style.css yang di-inline */
-        :root { --accent: #007bff; --muted: #6b7280; --card-bg: rgba(255,255,255,0.95); }
+        :root { --accent: #007bff; --muted: #6b7280; --card-bg: rgba(255,255,255,0.95); --text-color: #091226; }
         * { box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
         html, body { height: 100%; margin: 0; }
         body {
-            /* Pastikan gambar 'P4 (1).jpg' tersedia di lokasi yang sama atau ganti URL-nya */
+            /* Perlu mengganti 'P4 (1).jpg' dengan path gambar yang valid */
             background: url('P4 (1).jpg') center top / cover no-repeat;
-            color: #091226;
+            color: var(--text-color);
         }
-        .overlay { background: rgba(0,0,0,0.45); min-height: 100%; padding: 36px 18px; }
-        .container { max-width: 1080px; margin: 0 auto; }
+        .overlay { background: rgba(0,0,0,0.45); min-height: 100%; padding: 18px; }
+        .container { max-width: 1100px; margin: 0 auto; }
         header { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }
-        /* Ubah path gambar logo ke path relatif atau ganti */
         .logo { width: 100px; height: auto; border-radius: 10px; background: #fff; padding: 8px; box-shadow: 0 8px 30px rgba(2,8,20,0.5); }
         h1 { margin: 0; color: #fff; font-size: 22px; }
         p.lead { margin: 4px 0 0; color: rgba(255,255,255,0.9); font-size: 14px; }
-        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; box-shadow: 0 10px 40px rgba(2,8,20,0.35); }
+        .card { background: var(--card-bg); border-radius: 12px; padding: 18px; box-shadow: 0 10px 40px rgba(2,8,20,0.35); margin-bottom:14px; }
         .top-form { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
         .top-form > div { flex: 1; min-width: 180px; }
         label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
@@ -31,29 +29,37 @@
         .col { background: rgba(255,255,255,0.85); border-radius: 10px; padding: 12px; border: 1px solid #eef1f6; }
         .col h3 { margin: 0 0 8px; font-size: 16px; }
         .row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
-        button { padding: 9px 12px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 600; }
+        button { padding: 9px 12px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 600; transition: background-color 0.2s, opacity 0.2s; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
         button.primary { background: var(--accent); color: #fff; }
-        button.ghost { background: transparent; border: 1px solid #d6dae6; color: #0b1220; }
+        button.ghost { background: transparent; border: 1px solid #d6dae6; color: var(--text-color); }
         table { width: 100%; border-collapse: collapse; margin-top: 14px; background: transparent; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid rgba(11,17,34,0.06); font-size: 14px; }
         th { color: var(--muted); font-weight: 700; }
         td.center { text-align: center; }
         footer { margin-top: 12px; color: rgba(255,255,255,0.85); font-size: 13px; text-align: center; }
-        @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } .top-form { flex-direction: column; } }
+        .face-panel { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+        .video-wrap { width:320px; background:#000; border-radius:8px; overflow:hidden; border:1px solid #111; }
+        video { width:100%; height:auto; display:block; }
+        .small { font-size:13px; color:var(--muted); }
+        .known-list { max-height:160px; overflow-y:auto; border:1px dashed #e6e9ef; padding:8px; border-radius:6px; background:rgba(255,255,255,0.95); }
+        .del-face { background: none; border: none; color: #dc3545; padding: 0; font-size: 13px; font-weight: 500; }
+        .del-face:hover { text-decoration: underline; }
+        @media (max-width: 920px) { .two-col { grid-template-columns: 1fr; } .top-form { flex-direction: column; } .video-wrap { width:100%; } }
     </style>
 </head>
 <body>
     <div class="overlay">
         <div class="container">
             <header>
-                <img src="images/logo.jpg" alt="Logo SBU JPP PKT" class="logo" /> 
+                <img src="images (1).jpeg" alt="Logo SBU JPP PKT" class="logo" />
                 <div>
                     <h1>Presensi Karyawan — Turn arround SBU JPP PKT</h1>
-                    <p class="lead">Check-in & Check-out | Otomatis / Manual | LocalStorage + CSV</p>
+                    <p class="lead">Check-in & Check-out | Otomatis / Manual | LocalStorage + CSV | Face ID</p>
                 </div>
             </header>
 
-            <section class="card">
+            <section class="card" id="presensiCard">
                 <div class="top-form">
                     <div>
                         <label for="company">Perusahaan</label>
@@ -66,13 +72,42 @@
                             <option value="PT TRI ENERGIENERINDO">6. PT TRI ENERGIENERINDO</option>
                             <option value="PT KALIMANTAN AGUNG PERSADA">7. PT KALIMANTAN AGUNG PERSADA</option>
                             <option value="PT MILDA">8. PT MILDA</option>
-                            <option value="lainnya">9. Lainnya (Tulis nama perusahaan Anda)</option>
+                            <option value="PT KALTIM NUSA ETIKA">9. PT KALTIM NUSA ETIKA(PT KNE)</option>
+                            <option value="PT YEPEKA USAHA MANDIRI(PT YUM)">10. PT YEPEKA USAHA MANDIRI (PT YUM)</option>
+                            <option value="lainnya">11. Lainnya (Tulis nama perusahaan Anda)</option>
                         </select>
                     </div>
 
                     <div id="companyOtherWrap" style="display:none">
                         <label for="companyOther">Tulis nama perusahaan Anda (jika tidak ada)</label>
                         <input id="companyOther" type="text" placeholder="Nama perusahaan" />
+                    </div>
+
+                    <div>
+                        <label for="jabatan">Jabatan</label>
+                        <select id="jabatan">
+                            <option value="Helper Mekanik">1. Helper Mekanik</option>
+                            <option value="Helper mechanical cleaning">2. Helper mechanical cleaning</option>
+                            <option value="Helper catalyst">3. Helper catalyst</option>
+                            <option value="Helper Pengelasan">4. Helper Pengelasan</option>
+                            <option value="Helper istek">5. Helper istek</option>
+                            <option value="Helper instrument">6. Helper instrument</option>
+                            <option value="Helper listrik">7. Helper listrik</option>
+                            <option value="Helper painting">8. Helper painting</option>
+                            <option value="Welder SMAW/GMAW">9. Welder SMAW/GMAW</option>
+                            <option value="Pipe fitter">10. Pipe fitter</option>
+                            <option value="Instrument">11. Instrument</option>
+                            <option value="Rigger">12. Rigger</option>
+                            <option value="Scaffolding">13. Scaffolding</option>
+                            <option value="isolasi I">14. isolasi I</option>
+                            <option value="isolasi II">15. isolasi II</option>
+                            <option value="lainnya">16. Lainnya (tuliskan jabatan Anda)</option>
+                        </select>
+                    </div>
+
+                    <div id="jabatanOtherWrap" style="display:none">
+                        <label for="jabatanOther">Tulis jabatan Anda (jika tidak ada di daftar)</label>
+                        <input id="jabatanOther" type="text" placeholder="Nama jabatan" />
                     </div>
 
                     <div><label>Nama</label><input id="nama" type="text" placeholder="Masukkan nama karyawan"></div>
@@ -106,29 +141,107 @@
                 </div>
 
                 <div class="row" style="margin-top:15px;flex-wrap:wrap;">
-                    <input type="search" id="search" placeholder="Cari nama, NIK, unit, perusahaan, atau tipe..." style="flex:1;">
+                    <input type="search" id="search" placeholder="Cari nama, NIK, unit, perusahaan, jabatan, atau tipe..." style="flex:1;">
                     <button class="ghost" id="btnExport">Ekspor CSV</button>
                     <button class="ghost" id="btnClear">Hapus Semua</button>
                 </div>
 
                 <table id="tabelPresensi">
                     <thead>
-                        <tr><th>Perusahaan</th><th>Nama</th><th>NIK</th><th>Unit</th><th>Keterangan</th><th>Waktu</th><th>Tipe</th><th class="center">Aksi</th></tr>
+                        <tr><th>Perusahaan</th><th>Nama</th><th>NIK</th><th>Unit</th><th>Jabatan</th><th>Keterangan</th><th>Waktu</th><th>Tipe</th><th class="center">Aksi</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </section>
 
-            <footer>© 2025 SBU Jasa Pelayanan Pabrik — Pupuk Kaltim | Data disimpan di browser</footer>
+            <section class="card">
+                <h3>Face ID — Camera Recognition & Enroll</h3>
+                <div class="face-panel">
+                    <div class="video-wrap">
+                        <video id="inputVideo" autoplay muted playsinline></video>
+                    </div>
+
+                    <div style="flex:1; min-width:260px;">
+                        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
+                            <input id="enrollName" type="text" placeholder="Nama untuk enroll" style="flex:1; min-width: 100px; padding:8px; border-radius:6px; border:1px solid #e6e9ef;">
+                            <input id="enrollNIK" type="text" placeholder="NIK" style="width:120px; padding:8px; border-radius:6px; border:1px solid #e6e9ef;">
+                        </div>
+
+                        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
+                            <select id="enrollJabatan" style="flex:1; padding:8px; border-radius:6px; border:1px solid #e6e9ef;">
+                                <option value="Helper Mekanik">Helper Mekanik</option>
+                                <option value="Helper mechanical cleaning">Helper mechanical cleaning</option>
+                                <option value="Helper catalyst">Helper catalyst</option>
+                                <option value="Helper Pengelasan">Helper Pengelasan</option>
+                                <option value="Helper istek">Helper istek</option>
+                                <option value="Helper instrument">Helper instrument</option>
+                                <option value="Helper listrik">Helper listrik</option>
+                                <option value="Helper painting">Helper painting</option>
+                                <option value="Welder SMAW/GMAW">Welder SMAW/GMAW</option>
+                                <option value="Pipe fitter">Pipe fitter</option>
+                                <option value="Instrument">Instrument</option>
+                                <option value="Rigger">Rigger</option>
+                                <option value="Scaffolding">Scaffolding</option>
+                                <option value="isolasi I">isolasi I</option>
+                                <option value="isolasi II">isolasi II</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                            <input id="enrollJabatanOther" type="text" placeholder="Jika Lainnya, tulis jabatan" style="width:160px; padding:8px; border-radius:6px; border:1px solid #e6e9ef; display:none;">
+                        </div>
+
+                        <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap: wrap;">
+                            <button class="primary" id="btnEnroll">Enrol Wajah (5 sampel)</button>
+                            <button class="ghost" id="btnStart">Mulai Kamera</button>
+                            <button class="ghost" id="btnStop" disabled>Stop Kamera</button>
+                        </div>
+
+                        <div class="small">Status model: <span id="modelStatus">Belum dimuat</span></div>
+                        <div style="margin-top:8px;">
+                            <div class="small" style="margin-bottom:6px;">Daftar wajah terdaftar:</div>
+                            <div id="knownList" class="known-list"></div>
+                        </div>
+
+                        <div style="margin-top:8px;">
+                            <label class="small"><input type="checkbox" id="autoSaveOnRecognize" checked> Simpan presensi otomatis saat wajah dikenali</label><br>
+                            <label class="small"><input type="checkbox" id="autoCheckMode" checked> Gunakan mode Check-in/Check-out yang dipilih di form</label>
+                        </div>
+
+                        <div style="margin-top:8px;" class="small">Catatan: model dimuat dari CDN; jika gagal karena koneksi, host folder model sendiri dan ubah MODEL_URL di script.</div>
+                    </div>
+                </div>
+            </section>
+
+            <footer>© 2025 SBU Jasa Pelayanan Pabrik — Pupuk Kaltim | Data & face descriptors disimpan di browser</footer>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
     <script>
-        /* script.js yang di-inline (dengan pengembangan Autofill, Sorting, dan Waktu ISO) */
-        const STORAGE_KEY = 'presensi_jpp_pkt_v3';
+        // STORAGE KEYS
+        const STORAGE_KEY = 'presensi_jpp_pkt_v5';
+        const FACE_LABELS_KEY = 'presensi_face_labels_v2';
+        const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+
+        // Face Recognition Constants
+        const RECOGNITION_INTERVAL = 800; // ms
+        const DUPLICATE_WINDOW = 30 * 1000; // ignore same person within 30s (30s)
+        const RECOGNITION_DISTANCE = 0.55; // Threshold for face matching
+
+        // State
+        let stream = null;
+        let faceMatcher = null;
+        let labeledDescriptors = []; // array of { label, nik, jabatan, descriptors: [Array<number>] }
+        let lastRecognized = {}; // { nik: timestamp }
+        let recogLoop = null;
+
+        // DOM refs - presensi
         const company = document.getElementById('company');
         const companyOtherWrap = document.getElementById('companyOtherWrap');
         const companyOther = document.getElementById('companyOther');
+        const jabatan = document.getElementById('jabatan');
+        const jabatanOtherWrap = document.getElementById('jabatanOtherWrap');
+        const jabatanOther = document.getElementById('jabatanOther');
         const nama = document.getElementById('nama');
         const nik = document.getElementById('nik');
         const unit = document.getElementById('unit');
@@ -144,202 +257,534 @@
         const tableBody = document.querySelector('#tabelPresensi tbody');
         const search = document.getElementById('search');
 
-        // --- Fungsi Waktu & Data ---
+        // DOM refs - face
+        const inputVideo = document.getElementById('inputVideo');
+        const btnStart = document.getElementById('btnStart');
+        const btnStop = document.getElementById('btnStop');
+        const btnEnroll = document.getElementById('btnEnroll');
+        const enrollName = document.getElementById('enrollName');
+        const enrollNIK = document.getElementById('enrollNIK');
+        const enrollJabatan = document.getElementById('enrollJabatan');
+        const enrollJabatanOther = document.getElementById('enrollJabatanOther');
+        const modelStatus = document.getElementById('modelStatus');
+        const knownList = document.getElementById('knownList');
+        const autoSaveOnRecognize = document.getElementById('autoSaveOnRecognize');
+        const autoCheckMode = document.getElementById('autoCheckMode');
 
-        // Mengambil waktu saat ini dalam format yang mudah dibaca untuk tampilan
+        // --- Helper Functions ---
+
+        /** Get current time string for display (e.g., "21/10/2025 14.55.59") */
         function nowDisplay() {
-            return new Date().toLocaleString('id-ID', { hour12: false, dateStyle: 'short', timeStyle: 'medium' });
+            return new Date().toLocaleString('id-ID', { hour12: false });
         }
 
-        // Mengambil waktu saat ini dalam format standar untuk input datetime-local
+        /** Get current time string for datetime-local input (e.g., "2025-10-21T14:55") */
         function nowLocalInputValue() {
             const d = new Date();
             const p = n => String(n).padStart(2, '0');
-            // Format: YYYY-MM-DDThh:mm:ss
-            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+            return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
         }
 
-        function loadData() {
-            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch (e) { console.error(e); return []; }
+        /** Safely load data from LocalStorage */
+        function loadData(key = STORAGE_KEY) {
+            try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+            catch (e) { console.error('Error loading data from localStorage:', e); return []; }
         }
-        function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 
-        function escapeCsvCell(s) { const str = String(s == null ? '' : s); return '"' + str.replace(/"/g, '""') + '"'; }
+        /** Safely save data to LocalStorage */
+        function saveData(data, key = STORAGE_KEY) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        /** Load LabeledFaceDescriptors data */
+        function loadFaceLabels() {
+            return loadData(FACE_LABELS_KEY);
+        }
+
+        /** Save LabeledFaceDescriptors data */
+        function saveFaceLabels(list) {
+            saveData(list, FACE_LABELS_KEY);
+        }
+
+        /** CSV helpers */
+        function escapeCsvCell(s) {
+            const str = String(s == null ? '' : s);
+            return '"' + str.replace(/"/g, '""') + '"';
+        }
+
         function toCSV(list) {
-            // Tambah kolom Waktu ISO untuk kemudahan sorting/analisis di spreadsheet
-            const header = ['Perusahaan', 'Nama', 'NIK', 'Unit', 'Keterangan', 'Waktu Tampil', 'Waktu ISO', 'Tipe'];
+            const header = ['Perusahaan', 'Nama', 'NIK', 'Unit', 'Jabatan', 'Keterangan', 'Waktu', 'Tipe'];
             const rows = [header.map(escapeCsvCell).join(',')];
-            list.forEach(r => rows.push([r.company, r.nama, r.nik, r.unit || '', r.note || '', r.waktu_tampil, r.waktu_iso, r.type].map(escapeCsvCell).join(',')));
+            list.forEach(r => rows.push([r.company, r.nama, r.nik, r.unit || '', r.jabatan || '', r.note || '', r.waktu, r.type].map(escapeCsvCell).join(',')));
             return rows.join('\n');
         }
 
-        // --- Fungsionalitas Tambahan (SCM Development) ---
-
-        // 1. Validasi Radio Button (Auto-Update Input DateTime-local)
-        function setupModeListeners() {
-            const inRadios = document.querySelectorAll('input[name="inMode"]');
-            const outRadios = document.querySelectorAll('input[name="outMode"]');
-
-            inRadios.forEach(radio => radio.addEventListener('change', () => {
-                checkInTime.disabled = radio.value === 'auto';
-                btnInNow.disabled = radio.value === 'auto';
-            }));
-
-            outRadios.forEach(radio => radio.addEventListener('change', () => {
-                checkOutTime.disabled = radio.value === 'auto';
-                btnOutNow.disabled = radio.value === 'auto';
-            }));
-            
-            // Init state
-            checkInTime.disabled = document.querySelector('input[name="inMode"]:checked').value === 'auto';
-            btnInNow.disabled = checkInTime.disabled;
-            checkOutTime.disabled = document.querySelector('input[name="outMode"]:checked').value === 'auto';
-            btnOutNow.disabled = checkOutTime.disabled;
+        /** HTML Escape for security/display */
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        // 2. Autofill Data Karyawan berdasarkan NIK
-        nik.addEventListener('blur', () => {
-            const id = nik.value.trim().toUpperCase();
-            if (id) {
-                const data = loadData();
-                // Cari data terbaru dari NIK yang sama
-                const lastRecord = data.slice().reverse().find(r => r.nik.toUpperCase() === id);
+        // --- Presensi Logic ---
 
-                if (lastRecord) {
-                    // Isi otomatis
-                    nama.value = lastRecord.nama;
-                    unit.value = lastRecord.unit;
-                    note.value = lastRecord.note;
-
-                    // Set Perusahaan
-                    const companyValue = lastRecord.company;
-                    const companyOptions = Array.from(company.options).map(opt => opt.value);
-                    
-                    if (companyOptions.includes(companyValue)) {
-                        company.value = companyValue;
-                        companyOtherWrap.style.display = 'none';
-                    } else {
-                        company.value = 'lainnya';
-                        companyOther.value = companyValue;
-                        companyOtherWrap.style.display = 'block';
-                    }
-                    alert(`Data ${lastRecord.nama} ditemukan dan diisi otomatis.`);
-                }
-            }
-        });
-
-
-        // show/hide 'lainnya' input
-        company.addEventListener('change', () => {
-            companyOtherWrap.style.display = company.value === 'lainnya' ? 'block' : 'none';
-        });
-
-        // render table (newest first)
+        /** Renders the attendance table from local storage */
         function renderTable() {
             const data = loadData();
             const q = (search.value || '').trim().toLowerCase();
             tableBody.innerHTML = '';
             
-            // Urutkan berdasarkan waktu_iso (terbaru di atas)
-            const sortedData = data.slice().sort((a, b) => {
-                 // Menggunakan localeCompare untuk membandingkan string waktu ISO dengan aman
-                if (a.waktu_iso < b.waktu_iso) return 1;
-                if (a.waktu_iso > b.waktu_iso) return -1;
-                return 0;
-            });
-
-            sortedData.forEach((r, idx) => {
-                // Cari index aslinya di data yang belum disortir untuk aksi hapus
-                const origIdx = data.findIndex(item => item === r); 
-
-                const hay = [r.company, r.nama, r.nik, r.unit, r.note, r.type].join(' ').toLowerCase();
-                if (q && !hay.includes(q)) return;
+            // Iterate in reverse for latest first
+            data.slice().reverse().forEach((r, revIdx) => {
+                const origIdx = data.length - 1 - revIdx;
+                const hay = [r.company, r.nama, r.nik, r.unit, r.jabatan, r.note, r.type].join(' ').toLowerCase();
+                if (q && !hay.includes(q)) return; // Filter
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${r.company}</td>
-                    <td>${r.nama}</td>
-                    <td>${r.nik}</td>
-                    <td>${r.unit || ''}</td>
-                    <td>${r.note || ''}</td>
-                    <td>${r.waktu_tampil}</td> <td>${r.type}</td>
+                    <td>${escapeHtml(r.company)}</td>
+                    <td>${escapeHtml(r.nama)}</td>
+                    <td>${escapeHtml(r.nik)}</td>
+                    <td>${escapeHtml(r.unit || '')}</td>
+                    <td>${escapeHtml(r.jabatan || '')}</td>
+                    <td>${escapeHtml(r.note || '')}</td>
+                    <td>${escapeHtml(r.waktu)}</td>
+                    <td>${escapeHtml(r.type)}</td>
                     <td class="center"><button class="ghost del" data-idx="${origIdx}">Hapus</button></td>
                 `;
                 tableBody.appendChild(tr);
             });
 
-            tableBody.querySelectorAll('.del').forEach(btn => btn.onclick = e => {
-                const idx = Number(e.currentTarget.dataset.idx); if (!Number.isFinite(idx)) return;
+            // Attach delete listeners
+            tableBody.querySelectorAll('.del').forEach(btn => btn.onclick = (e) => {
+                const idx = Number(e.currentTarget.dataset.idx);
+                if (!Number.isFinite(idx)) return;
                 if (!confirm('Hapus entri ini?')) return;
-                const data = loadData(); data.splice(idx, 1); saveData(data); renderTable();
+                
+                const data = loadData();
+                data.splice(idx, 1);
+                saveData(data);
+                renderTable();
             });
         }
 
-        // initialize datetime inputs
-        function initDateTimeInputs() { checkInTime.value = nowLocalInputValue(); checkOutTime.value = nowLocalInputValue(); }
+        /** Handles saving Check-in or Check-out */
+        function savePresensi(type) {
+            const n = nama.value.trim();
+            const id = nik.value.trim();
+            if (!n || !id) return alert('Nama dan NIK harus diisi!');
 
+            const comp = company.value === 'lainnya' ? (companyOther.value.trim() || 'Lainnya') : company.value;
+            const jab = jabatan.value === 'lainnya' ? (jabatanOther.value.trim() || 'Lainnya') : jabatan.value;
+
+            const modeInput = document.querySelector(`input[name="${type === 'Check-in' ? 'inMode' : 'outMode'}"]:checked`);
+            const mode = modeInput ? modeInput.value : 'auto';
+            const timeInput = type === 'Check-in' ? checkInTime : checkOutTime;
+            
+            let waktu = null;
+            if (mode === 'auto') {
+                waktu = nowDisplay();
+            } else if (timeInput.value) {
+                // Safely convert datetime-local input to display format
+                try {
+                    waktu = new Date(timeInput.value).toLocaleString('id-ID', { hour12: false });
+                } catch(e) {
+                    // Fallback if date parsing fails
+                    waktu = timeInput.value.replace('T', ' ');
+                }
+            }
+            
+            if (!waktu) return alert(`Pilih waktu manual untuk ${type}.`);
+
+            const rec = { company: comp, nama: n, nik: id, unit: unit.value.trim(), jabatan: jab, note: note.value.trim(), waktu, type };
+            const data = loadData();
+            data.push(rec);
+            saveData(data);
+            renderTable();
+            alert(`${type} tersimpan.`);
+        }
+
+        // --- Face ID Logic ---
+
+        /** Loads face recognition models */
+        async function loadModels() {
+            modelStatus.textContent = 'Memuat model...';
+            try {
+                // Ensure all necessary models are loaded
+                await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+                await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+                modelStatus.textContent = 'Model terpasang';
+                btnStart.disabled = false;
+            } catch (err) {
+                console.error('Load models error', err);
+                modelStatus.textContent = 'Gagal memuat model — cek koneksi';
+                btnStart.disabled = true;
+            }
+        }
+
+        /** Starts the camera stream */
+        async function startCamera() {
+            if (stream) return;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+                inputVideo.srcObject = stream;
+                await new Promise(resolve => inputVideo.onloadedmetadata = resolve); // Wait for video to load
+                await inputVideo.play();
+                btnStart.disabled = true;
+                btnStop.disabled = false;
+            } catch (err) {
+                stream = null;
+                alert('Gagal mengakses kamera: ' + (err.message || err));
+            }
+        }
+
+        /** Stops the camera stream and recognition loop */
+        function stopCamera() {
+            if (!stream) return;
+            stopRecognitionLoop();
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+            inputVideo.pause();
+            inputVideo.srcObject = null;
+            btnStart.disabled = false;
+            btnStop.disabled = true;
+        }
+
+        /** Creates the FaceMatcher from stored descriptors */
+        function buildFaceMatcher() {
+            try {
+                if (!labeledDescriptors || !labeledDescriptors.length) {
+                    faceMatcher = null;
+                    return;
+                }
+                
+                const labeled = labeledDescriptors.map(ld =>
+                    new faceapi.LabeledFaceDescriptors(
+                        `${ld.label}___${ld.nik}___${ld.jabatan}`,
+                        (ld.descriptors || []).map(d => new Float32Array(d))
+                    )
+                );
+                // Use the constant RECOGNITION_DISTANCE for the threshold
+                faceMatcher = new faceapi.FaceMatcher(labeled, RECOGNITION_DISTANCE);
+            } catch (err) {
+                console.error('buildFaceMatcher error', err);
+                faceMatcher = null;
+            }
+        }
+
+        /** Renders the list of enrolled faces */
+        function renderKnownList() {
+            knownList.innerHTML = '';
+            if (!labeledDescriptors.length) {
+                knownList.innerHTML = '<div class="small">Belum ada wajah terdaftar.</div>';
+                return;
+            }
+
+            labeledDescriptors.forEach(ld => {
+                const el = document.createElement('div');
+                el.style.padding = '6px 4px';
+                el.style.borderBottom = '1px solid #eef1f6';
+                const displayName = ld.label || '';
+                const displayNik = ld.nik || '';
+                const displayJab = ld.jabatan || '';
+                el.innerHTML = `
+                    <strong>${escapeHtml(displayName)}</strong> — ${escapeHtml(displayNik)} — ${escapeHtml(displayJab)}
+                    <button style="float:right" data-nik="${escapeHtml(displayNik)}" class="del-face">Hapus</button>
+                `;
+                knownList.appendChild(el);
+            });
+
+            // Attach delete listeners
+            knownList.querySelectorAll('.del-face').forEach(b => b.onclick = (e) => {
+                const nikv = e.currentTarget.dataset.nik;
+                if (!confirm(`Hapus wajah dengan NIK ${nikv} ?`)) return;
+                
+                labeledDescriptors = labeledDescriptors.filter(x => x.nik !== nikv);
+                saveFaceLabels(labeledDescriptors);
+                buildFaceMatcher();
+                renderKnownList();
+            });
+        }
+
+        /** Load descriptors from storage and update FaceMatcher/UI */
+        function loadLabeledFromStorage() {
+            labeledDescriptors = loadFaceLabels() || [];
+            buildFaceMatcher();
+            renderKnownList();
+        }
+
+        /** Captures face samples, extracts descriptors, and saves the enrollment */
+        async function enrollPerson(nameLabel, nikValue, jabValue, shots = 5) {
+            if (!stream) await startCamera();
+            if (!stream) throw new Error('Kamera tidak aktif');
+            
+            modelStatus.textContent = 'Mengambil sampel wajah...';
+            const descriptors = [];
+            
+            for (let i = 0; i < shots; i++) {
+                // Give time for user to adjust/camera to capture
+                await new Promise(r => setTimeout(r, 700)); 
+                
+                const detection = await faceapi
+                    .detectSingleFace(inputVideo, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (!detection) {
+                    modelStatus.textContent = `Tidak menemukan wajah (coba lagi: ${i + 1}/${shots})`;
+                    i--; // retry count is decremented for retries
+                    continue;
+                }
+
+                descriptors.push(Array.from(detection.descriptor));
+                modelStatus.textContent = `Mengambil sampel: ${i + 1}/${shots}`;
+            }
+
+            // Check if person already exists by NIK
+            const existing = labeledDescriptors.find(ld => ld.nik === nikValue);
+            if (existing) {
+                existing.descriptors = (existing.descriptors || []).concat(descriptors);
+                // Also update label/jabatan in case of change
+                existing.label = nameLabel;
+                existing.jabatan = jabValue;
+            } else {
+                labeledDescriptors.push({ label: nameLabel, nik: nikValue, jabatan: jabValue, descriptors });
+            }
+            
+            saveFaceLabels(labeledDescriptors);
+            buildFaceMatcher();
+            renderKnownList();
+            modelStatus.textContent = `Enroll selesai: ${nameLabel} (${nikValue})`;
+        }
+
+        /** Main recognition loop on video frame */
+        function startRecognitionLoop() {
+            if (!faceMatcher || recogLoop) return;
+            
+            const recognizer = async () => {
+                if (!stream || inputVideo.paused || inputVideo.ended) return;
+
+                try {
+                    // Only detect face, landmarks, and descriptor
+                    const detection = await faceapi
+                        .detectSingleFace(inputVideo, new faceapi.TinyFaceDetectorOptions())
+                        .withFaceLandmarks()
+                        .withFaceDescriptor();
+                        
+                    if (!detection) return;
+
+                    const best = faceMatcher.findBestMatch(detection.descriptor);
+                    
+                    if (!best || best.label === 'unknown') {
+                        console.log('Wajah tidak dikenal.');
+                        return;
+                    }
+
+                    // Parse label (e.g., "Nama___NIK___Jabatan")
+                    const parts = best.label.split('___');
+                    const [nameLabel, nikValue, jabValue] = parts;
+                    
+                    const now = Date.now();
+                    // Prevent duplicate recognition within the DUPLICATE_WINDOW
+                    if (nikValue && lastRecognized[nikValue] && (now - lastRecognized[nikValue] < DUPLICATE_WINDOW)) {
+                        console.log(`Wajah ${nameLabel} dikenali, tapi diabaikan (duplikat dalam ${DUPLICATE_WINDOW/1000}s).`);
+                        return;
+                    }
+
+                    if (nikValue) lastRecognized[nikValue] = now;
+                    console.log(`Wajah dikenali: ${nameLabel} (${best.distance.toFixed(2)})`);
+
+                    // 1. Fill Presensi Form
+                    nama.value = nameLabel;
+                    nik.value = nikValue;
+                    
+                    // Set jabatan dropdown (handle 'lainnya')
+                    const foundOpt = Array.from(jabatan.options).find(o => o.value === jabValue);
+                    if (foundOpt) {
+                        jabatan.value = jabValue;
+                        jabatanOtherWrap.style.display = 'none';
+                        jabatanOther.value = '';
+                    } else {
+                        jabatan.value = 'lainnya';
+                        jabatanOtherWrap.style.display = 'block';
+                        jabatanOther.value = jabValue || '';
+                    }
+                    
+                    // 2. Auto-save if enabled
+                    if (autoSaveOnRecognize.checked) {
+                        // Determine type: prefer Check-in if auto mode is selected for it
+                        const inModeAuto = document.querySelector('input[name="inMode"][value="auto"]').checked;
+                        const outModeAuto = document.querySelector('input[name="outMode"][value="auto"]').checked;
+                        let type;
+
+                        if (autoCheckMode.checked) {
+                            // If autoCheckMode is on, use the selected radio button's intent
+                            if (inModeAuto) {
+                                type = 'Check-in';
+                            } else if (outModeAuto) {
+                                type = 'Check-out';
+                            } else {
+                                // Default to Check-in if neither auto mode is selected
+                                type = 'Check-in'; 
+                            }
+                        } else {
+                            // If autoCheckMode is off, always assume Check-in for simplicity
+                            type = 'Check-in';
+                        }
+                        
+                        // Extract required data again (since form might be manually modified)
+                        const n_auto = nameLabel; // Use recognized name
+                        const id_auto = nikValue; // Use recognized NIK
+                        const comp_auto = company.value === 'lainnya' ? (companyOther.value.trim() || 'Lainnya') : company.value;
+                        const jabv_auto = (jabatan.value === 'lainnya') ? (jabatanOther.value.trim() || 'Lainnya') : jabatan.value;
+                        
+                        if (n_auto && id_auto) {
+                            // Get the time based on auto/manual setting for the determined type
+                            const mode = document.querySelector(`input[name="${type === 'Check-in' ? 'inMode' : 'outMode'}"]:checked`).value;
+                            const timeInput = type === 'Check-in' ? checkInTime : checkOutTime;
+                            
+                            let waktu = null;
+                            if (mode === 'auto') {
+                                waktu = nowDisplay();
+                            } else if (timeInput.value) {
+                                try { waktu = new Date(timeInput.value).toLocaleString('id-ID', { hour12: false }); } 
+                                catch (e) { waktu = timeInput.value.replace('T', ' '); }
+                            }
+                            
+                            if (waktu) {
+                                const rec = { company: comp_auto, nama: n_auto, nik: id_auto, unit: unit.value.trim(), jabatan: jabv_auto, note: note.value.trim(), waktu, type };
+                                const data = loadData();
+                                data.push(rec);
+                                saveData(data);
+                                renderTable();
+                                console.log(`Auto ${type} saved for ${n_auto} (${id_auto})`);
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Recognition loop error', err);
+                }
+            };
+            
+            // Start the interval loop
+            recogLoop = setInterval(recognizer, RECOGNITION_INTERVAL);
+        }
+
+        function stopRecognitionLoop() { 
+            if (recogLoop) { 
+                clearInterval(recogLoop); 
+                recogLoop = null; 
+            } 
+        }
+
+        // --- Event Listeners ---
+
+        // UI: show/hide company/jabatan-other
+        company.addEventListener('change', () => companyOtherWrap.style.display = company.value === 'lainnya' ? 'block' : 'none');
+        jabatan.addEventListener('change', () => jabatanOtherWrap.style.display = jabatan.value === 'lainnya' ? 'block' : 'none');
+        enrollJabatan.addEventListener('change', () => {
+            enrollJabatanOther.style.display = enrollJabatan.value === 'lainnya' ? 'block' : 'none';
+        });
+
+        // Presensi Buttons
         btnInNow.addEventListener('click', () => { checkInTime.value = nowLocalInputValue(); alert('Waktu check-in diperbarui.'); });
         btnOutNow.addEventListener('click', () => { checkOutTime.value = nowLocalInputValue(); alert('Waktu check-out diperbarui.'); });
-
-        btnInSave.addEventListener('click', () => {
-            const n = nama.value.trim(); const id = nik.value.trim(); if (!n || !id) return alert('Nama dan NIK harus diisi!');
-            const comp = company.value === 'lainnya' ? (companyOther.value.trim() || 'Lainnya') : company.value;
-            const mode = document.querySelector('input[name="inMode"]:checked').value;
-            
-            let waktu_tampil, waktu_iso;
-
-            if (mode === 'auto') {
-                const now = new Date();
-                waktu_tampil = now.toLocaleString('id-ID', { hour12: false, dateStyle: 'short', timeStyle: 'medium' });
-                waktu_iso = now.toISOString(); // Format standar untuk penyimpanan dan sorting
-            } else {
-                if (!checkInTime.value) return alert('Pilih waktu manual untuk check-in.');
-                const manualDate = new Date(checkInTime.value);
-                waktu_tampil = manualDate.toLocaleString('id-ID', { hour12: false, dateStyle: 'short', timeStyle: 'medium' });
-                waktu_iso = manualDate.toISOString();
-            }
-
-            // Simpan NIK dalam huruf kapital untuk konsistensi autofill
-            const rec = { company: comp, nama: n, nik: id.toUpperCase(), unit: unit.value.trim(), note: note.value.trim(), waktu_tampil, waktu_iso, type: 'Check-in' }; 
-            const data = loadData(); data.push(rec); saveData(data); renderTable(); alert('Check-in tersimpan.');
-        });
-
-        btnOutSave.addEventListener('click', () => {
-            const n = nama.value.trim(); const id = nik.value.trim(); if (!n || !id) return alert('Nama dan NIK harus diisi!');
-            const comp = company.value === 'lainnya' ? (companyOther.value.trim() || 'Lainnya') : company.value;
-            const mode = document.querySelector('input[name="outMode"]:checked').value;
-            
-            let waktu_tampil, waktu_iso;
-            
-            if (mode === 'auto') {
-                const now = new Date();
-                waktu_tampil = now.toLocaleString('id-ID', { hour12: false, dateStyle: 'short', timeStyle: 'medium' });
-                waktu_iso = now.toISOString();
-            } else {
-                if (!checkOutTime.value) return alert('Pilih waktu manual untuk check-out.');
-                const manualDate = new Date(checkOutTime.value);
-                waktu_tampil = manualDate.toLocaleString('id-ID', { hour12: false, dateStyle: 'short', timeStyle: 'medium' });
-                waktu_iso = manualDate.toISOString();
-            }
-
-            const rec = { company: comp, nama: n, nik: id.toUpperCase(), unit: unit.value.trim(), note: note.value.trim(), waktu_tampil, waktu_iso, type: 'Check-out' };
-            const data = loadData(); data.push(rec); saveData(data); renderTable(); alert('Check-out tersimpan.');
-        });
-
-        btnExport.addEventListener('click', () => {
-            const data = loadData(); if (!data.length) return alert('Tidak ada data untuk diekspor.');
-            const csv = toCSV(data); 
-            // Tambahkan BOM untuk kompatibilitas Excel yang lebih baik
-            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' }); 
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'presensi_jpp_pkt.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href);
-        });
-
-        btnClear.addEventListener('click', () => { if (!confirm('Hapus semua data presensi? Tindakan ini tidak bisa dibatalkan!')) return; localStorage.removeItem(STORAGE_KEY); renderTable(); });
-
+        btnInSave.addEventListener('click', () => savePresensi('Check-in'));
+        btnOutSave.addEventListener('click', () => savePresensi('Check-out'));
         search.addEventListener('input', renderTable);
+        
+        btnExport.addEventListener('click', () => {
+            const data = loadData();
+            if (!data.length) return alert('Tidak ada data untuk diekspor.');
+            const csv = toCSV(data);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'presensi_jpp_pkt.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(a.href);
+        });
 
-        // init
-        (function(){ initDateTimeInputs(); setupModeListeners(); renderTable(); nama.focus(); })();
+        btnClear.addEventListener('click', () => { 
+            if (!confirm('Hapus semua data presensi? Tindakan ini tidak dapat dibatalkan.')) return; 
+            localStorage.removeItem(STORAGE_KEY); 
+            renderTable();
+        });
+
+        // Face ID Controls
+        btnStart.addEventListener('click', async () => { 
+            await startCamera(); 
+            // The recognition loop is started on video 'play' event
+        });
+        btnStop.addEventListener('click', stopCamera);
+
+        btnEnroll.addEventListener('click', async () => {
+            const nameVal = enrollName.value.trim();
+            const nikVal = enrollNIK.value.trim();
+            if (!nameVal || !nikVal) return alert('Isi Nama dan NIK untuk enroll!');
+            
+            const jabVal = enrollJabatan.value === 'lainnya' ? (enrollJabatanOther.value.trim() || 'Lainnya') : enrollJabatan.value;
+            
+            btnEnroll.disabled = true;
+            try {
+                await enrollPerson(nameVal, nikVal, jabVal, 5);
+                alert(`Enroll wajah berhasil: ${nameVal} (${nikVal})`);
+            } catch (err) {
+                console.error('Enroll error', err);
+                alert('Enroll gagal: ' + (err.message || 'Terjadi kesalahan tidak terduga.'));
+            }
+            btnEnroll.disabled = false;
+        });
+
+        // Autoplay recognition when video plays (if matcher ready)
+        inputVideo.addEventListener('play', () => {
+            // Re-build face matcher if it was cleared and models are loaded
+            if (!faceMatcher && labeledDescriptors.length > 0) buildFaceMatcher(); 
+            
+            if (faceMatcher) {
+                console.log('Video play detected. Starting recognition loop.');
+                startRecognitionLoop();
+            } else {
+                console.log('Video play detected, but no face matcher or labeled descriptors. Recognition paused.');
+            }
+        });
+
+
+        // --- Initialization ---
+
+        function init() {
+            // Init UI
+            initDateTimeInputs();
+            renderTable();
+            nama.focus();
+            btnStart.disabled = true; // Disabled until models load
+
+            // Init Models and Face Data
+            loadModels().then(() => {
+                loadLabeledFromStorage();
+                if (!faceMatcher && labeledDescriptors.length > 0) {
+                    // Try to build matcher again if models loaded but matcher didn't build initially
+                    buildFaceMatcher();
+                }
+                if (!modelStatus.textContent.includes('Gagal')) modelStatus.textContent = 'Model siap';
+            });
+            
+            // Set initial value for datetime inputs
+            function initDateTimeInputs() { 
+                checkInTime.value = nowLocalInputValue(); 
+                checkOutTime.value = nowLocalInputValue(); 
+            }
+        }
+
+        // Run initialization
+        init();
+        
+        // Final safety save for face descriptors on unload
+        window.addEventListener('beforeunload', () => {
+             saveFaceLabels(labeledDescriptors);
+        });
     </script>
 </body>
 </html>
